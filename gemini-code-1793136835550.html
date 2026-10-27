@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulado Interativo de Inglês - 8º Ano</title>
+  <style>
+    /* Reset & Base Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #002147;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #000;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    /* Scrollbar Estilizada */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 5px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #dc2626;
+      border-radius: 5px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #b91c1c;
+    }
+
+    /* Header e Navegação */
+    header {
+      width: 100%;
+      max-width: 850px;
+      margin-bottom: 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .logo {
+      max-width: 180px;
+      height: auto;
+      margin-bottom: 15px;
+      display: block;
+      border: 3px solid #dc2626;
+      border-radius: 10px;
+      background-color: #001026;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    h1 {
+      color: #ffffff;
+      margin-bottom: 15px;
+      font-size: 1.8rem;
+    }
+
+    .nav-grid {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      border: 2px solid #ffffff;
+      background-color: #001530;
+      color: #ffffff;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      background-color: #003366;
+    }
+
+    .nav-btn.active {
+      border-color: #f59e0b;
+      box-shadow: 0 0 8px #f59e0b;
+    }
+
+    .nav-btn.correct {
+      background-color: #16a34a !important;
+      border-color: #16a34a !important;
+      color: #fff;
+    }
+
+    .nav-btn.incorrect {
+      background-color: #dc2626 !important;
+      border-color: #dc2626 !important;
+      color: #fff;
+    }
+
+    /* Container Principal */
+    .container {
+      background-color: #ffffff;
+      border: 3px solid #dc2626;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 850px;
+      padding: 30px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 10px;
+    }
+
+    .question-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #000;
+    }
+
+    /* Pinned Text (Texto Fixo com Scroll) */
+    .pinned-text-box {
+      max-height: 200px;
+      overflow-y: auto;
+      background-color: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-left: 4px solid #dc2626;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #000;
+    }
+
+    .pinned-text-box h4 {
+      margin-bottom: 8px;
+      color: #dc2626;
+    }
+
+    /* Enunciado */
+    .statement {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      color: #000;
+      font-weight: 500;
+    }
+
+    /* Opções de Resposta */
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      padding: 12px 15px;
+      border: 2px solid #cbd5e1;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+      background-color: #fff;
+    }
+
+    .option-item:hover {
+      background-color: #f1f5f9;
+      border-color: #94a3b8;
+    }
+
+    .option-item input[type="radio"] {
+      margin-top: 4px;
+      margin-right: 12px;
+      cursor: pointer;
+    }
+
+    .option-text {
+      font-size: 1rem;
+      color: #000;
+      line-height: 1.4;
+    }
+
+    .option-item.selected {
+      border-color: #dc2626;
+      background-color: #fef2f2;
+    }
+
+    .option-item.correct-bg {
+      background-color: #dcfce7 !important;
+      border-color: #16a34a !important;
+    }
+
+    .option-item.incorrect-bg {
+      background-color: #fee2e2 !important;
+      border-color: #dc2626 !important;
+    }
+
+    /* Justificativa / Feedback */
+    .feedback-box {
+      display: none;
+      background-color: #f8fafc;
+      border-left: 4px solid #0284c7;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #000;
+    }
+
+    .feedback-box.show {
+      display: block;
+    }
+
+    .feedback-box strong {
+      color: #0284c7;
+    }
+
+    /* Botões de Ação na Ordem Obrigatória: [ Next ] [ Check ] [ Previous ] */
+    .action-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .btn {
+      background-color: #dc2626;
+      color: #ffffff;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      flex: 1;
+      max-width: 150px;
+      text-align: center;
+    }
+
+    .btn:hover {
+      background-color: #b91c1c;
+    }
+
+    .btn:disabled {
+      background-color: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .btn-finish {
+      background-color: #16a34a;
+      max-width: 200px;
+    }
+
+    .btn-finish:hover {
+      background-color: #15803d;
+    }
+
+    /* Modal de Resultado Final */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.75);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background-color: #ffffff;
+      border: 3px solid #dc2626;
+      border-radius: 10px;
+      max-width: 650px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 30px;
+      color: #000;
+    }
+
+    .modal-header {
+      text-align: center;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 10px;
+    }
+
+    .modal-header h2 {
+      color: #dc2626;
+      font-size: 1.8rem;
+    }
+
+    .score-display {
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 15px;
+      color: #0f172a;
+    }
+
+    .stats-container {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+      background-color: #f8fafc;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+
+    .stat-value.correct { color: #16a34a; }
+    .stat-value.incorrect { color: #dc2626; }
+
+    .diagnostics-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #0f172a;
+    }
+
+    .diagnostics-list {
+      list-style-type: disc;
+      padding-left: 20px;
+      margin-bottom: 25px;
+      line-height: 1.6;
+    }
+
+    .modal-footer {
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+      .action-buttons {
+        flex-direction: row;
+      }
+      .btn {
+        padding: 10px 10px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="master.png" alt="Logo Master" class="logo">
+    <h1>Simulado de Língua Inglesa - 8º Ano</h1>
+    <div class="nav-grid" id="nav-grid">
+      <!-- Botões de 1 a 10 gerados via JS -->
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="question-header">
+      <span class="question-title" id="question-title">Questão 1 de 10</span>
+    </div>
+
+    <!-- Pinned Text (Exibido nas Questões 1 e 2) -->
+    <div class="pinned-text-box" id="pinned-text-box" style="display: none;">
+      <h4>Texto Base:</h4>
+      <p id="pinned-text-content"></p>
+    </div>
+
+    <!-- Enunciado -->
+    <div class="statement" id="statement-text">
+      <!-- Enunciado será carregado aqui -->
+    </div>
+
+    <!-- Opções -->
+    <div class="options-list" id="options-list">
+      <!-- Opções serão carregadas aqui -->
+    </div>
+
+    <!-- Justificativa -->
+    <div class="feedback-box" id="feedback-box">
+      <strong>Justificativa:</strong> <span id="feedback-text"></span>
+    </div>
+
+    <!-- Botões de Ação: [ Next ] [ Check ] [ Previous ] -->
+    <div class="action-buttons">
+      <button class="btn" id="btn-next" onclick="nextQuestion()">Next</button>
+      <button class="btn" id="btn-check" onclick="checkAnswer()">Check</button>
+      <button class="btn" id="btn-prev" onclick="prevQuestion()">Previous</button>
+    </div>
+  </main>
+
+  <!-- Modal de Resultado Final -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Resultado do Simulado</h2>
+      </div>
+      <div class="score-display" id="score-display">
+        Sua Nota: 0,0 / 10,0
+      </div>
+      <div class="stats-container">
+        <div class="stat-item">
+          <div>Acertos</div>
+          <div class="stat-value correct" id="stat-correct">0 (0%)</div>
+        </div>
+        <div class="stat-item">
+          <div>Erros</div>
+          <div class="stat-value incorrect" id="stat-incorrect">0 (0%)</div>
+        </div>
+      </div>
+      <div class="diagnostics-title">Diagnóstico e Recomendações Pedagógicas:</div>
+      <ul class="diagnostics-list" id="diagnostics-list">
+        <!-- Recomendações dinâmicas -->
+      </ul>
+      <div class="modal-footer">
+        <button class="btn btn-finish" onclick="restartQuiz()">Refazer Simulado</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // TEXTO BASE PARA AS QUESTÕES 1 E 2 (A2 CEFR - Electronic Voting Machines in Brazil)
+    const textBase12 = `"Electronic Voting Machines in Brazil"\n\n` +
+      `Brazil uses electronic voting machines in all national and regional elections. ` +
+      `The Supreme Electoral Court (TSE) created these machines in 1996 to make elections faster, safer, and cleaner. ` +
+      `Before this technology, people voted with paper ballots, and counting the votes took many days.\n\n` +
+      `The electronic voting machine operates without any connection to the internet or external networks. ` +
+      `Voters type the candidate number on a simple keyboard and confirm their choice on the screen. ` +
+      `After the voting hours end, officials print the local results and transport the encrypted memory drives to counting centers. ` +
+      `Because of this isolated offline system, election results are published in just a few hours across the entire country.`;
+
+    // ESTRUTURA DOS DADOS DAS QUESTÕES
+    const rawQuestions = [
+      {
+        id: 1,
+        topic: "Compreensão Textual Avançada",
+        pinnedText: textBase12,
+        statement: "Ao realizar uma leitura analítica do texto sobre o sistema eleitoral brasileiro, assinale a alternativa que apresenta uma inferência juridicamente e operacionalmente correta a respeito do mecanismo de segurança das urnas eletrônicas:",
+        correctKey: "D",
+        options: {
+          A: "As urnas eletrônicas são sincronizadas em tempo real com servidores em nuvem por meio de conexões de internet 5G durante todo o horário de votação.",
+          B: "A eliminação completa das cédulas de papel inviabilizou qualquer tipo de verificação ou auditoria pública dos resultados após o encerramento da eleição.",
+          C: "O processo de apuração depende exclusivamente de técnicos estrangeiros especializados em redes sem fio locais.",
+          D: "O isolamento absoluto das urnas em relação a redes externas (off-line) constitui a principal barreira arquitetural contra invasões virtuais e manipulações remotas de dados.",
+          E: "O Tribunal Superior Eleitoral substitui integralmente a memória interna das urnas a cada hora de votação para evitar fraudes."
+        },
+        justification: "Resposta correta: D. A questão exige nível avançado de inferência. O texto explicita que as urnas operam 'without any connection to the internet or external networks' e possuem 'isolated offline system', o que permite inferir que a ausência de conectividade externa é a salvaguarda fundamental contra ataques remotos."
+      },
+      {
+        id: 2,
+        topic: "Pronomes Relativos - Referência Institucional/Pessoal",
+        pinnedText: textBase12,
+        statement: "Examine a seguinte frase reescrita a partir do texto base: <b>\"The Supreme Electoral Court (TSE), ________ designed the modern electronic voting machines, guaranteed the speed of the national election results.\"</b>\n\nAssinale a opção que preenche a lacuna de forma gramaticalmente precisa de acordo com o contexto formal:",
+        correctKey: "A",
+        options: {
+          A: "which",
+          B: "who",
+          C: "whose",
+          D: "where",
+          E: "what"
+        },
+        justification: "Resposta correta: A. 'The Supreme Electoral Court (TSE)' refere-se a uma instituição/órgão governamental (entidade inanimada/coletiva), exigindo o pronome relativo 'which' em orações explicativas (entre vírgulas)."
+      },
+      {
+        id: 3,
+        topic: "Perguntas com Wh-Words no Simple Past",
+        pinnedText: null,
+        statement: "Considere a pergunta sobre auditorias eleitorais: <b>\"Where did the electoral inspectors verify the physical memory drives after the election?\"</b>\n\nAssinale a alternativa que apresenta a resposta correta no Simple Past em consonância com a pergunta estabelecida:",
+        correctKey: "C",
+        options: {
+          A: "They verified the memory drives because the public required an official report.",
+          B: "Yes, the inspectors verified all the memory drives carefully.",
+          C: "They verified the physical memory drives at regional electoral headquarters.",
+          D: "The inspectors are verifying the physical memory drives right now.",
+          E: "Inspectors verify the memory drives every four years."
+        },
+        justification: "Resposta correta: C. A Wh-Word 'Where' questiona a localização espacial. A resposta no Simple Past especifica o local ('at regional electoral headquarters')."
+      },
+      {
+        id: 4,
+        topic: "Perguntas com Wh-Words no Simple Past",
+        pinnedText: null,
+        statement: "Examine a pergunta a seguir: <b>\"Why did the electoral authority implement electronic voting machines in 1996?\"</b>\n\nAssinale a opção que responde de forma gramatical e contextualmente adequada ao pronome interrogativo em destaque:",
+        correctKey: "E",
+        options: {
+          A: "They implemented electronic voting machines in October 1996.",
+          B: "The electoral authority implemented the machines in all twenty-six states.",
+          C: "Yes, the voting process became much faster in 1996.",
+          D: "Engineers and computer experts designed the electronic voting machines.",
+          E: "Because they wanted to eliminate manual paper frauds and speed up vote counting."
+        },
+        justification: "Resposta correta: E. O pronome interrogativo 'Why' solicita a causa/motivo, cuja resposta padrão inicia-se com a conjunção 'Because' seguida da motivação no passado ('wanted')."
+      },
+      {
+        id: 5,
+        topic: "Perguntas com Wh-Words no Simple Past",
+        pinnedText: null,
+        statement: "Considere a pergunta: <b>\"When did the electoral tribunal publish the final results of the Sunday voting?\"</b>\n\nAssinale a alternativa que fornece a resposta correta para a expressão interrogativa temporária:",
+        correctKey: "B",
+        options: {
+          A: "The tribunal published the results in the main auditorium of the capital.",
+          B: "The tribunal published the final results late Sunday night around 10 PM.",
+          C: "Because the electronic counting process was completely automated.",
+          D: "Yes, the final results were published without any technical delays.",
+          E: "The election officials publish the official results every election evening."
+        },
+        justification: "Resposta correta: B. A palavra 'When' solicita uma determinação temporal no passado ('late Sunday night around 10 PM'), empregando corretamente o verbo no Simple Past ('published')."
+      },
+      {
+        id: 6,
+        topic: "Unificação de Frases com Pronome Relativo (Who)",
+        pinnedText: null,
+        statement: "Considere as duas orações simples abaixo:\n\n1. <i>The software developer received national recognition.</i>\n2. <i>He created the encryption code for the electronic voting system.</i>\n\nAssinale a opção que une corretamente as duas orações em um único período com o pronome relativo <b>who</b>:",
+        correctKey: "A",
+        options: {
+          A: "The software developer who created the encryption code for the electronic voting system received national recognition.",
+          B: "The software developer which created the encryption code for the electronic voting system received national recognition.",
+          C: "The software developer who he created the encryption code received national recognition.",
+          D: "The software developer created the encryption code who received national recognition.",
+          E: "The software developer whose created the encryption code for the electronic voting system received national recognition."
+        },
+        justification: "Resposta correta: A. O pronome relativo 'who' conecta adequadamente o sujeito humano ('The software developer') ao verbo de sua ação sem manter pronomes redundantes (como na C)."
+      },
+      {
+        id: 7,
+        topic: "Unificação de Frases com Pronome Relativo (Which)",
+        pinnedText: null,
+        statement: "Considere as frases a seguir:\n\n1. <i>The new security protocol was approved by international observers.</i>\n2. <i>It prevents unauthorized access to the voting system.</i>\n\nAssinale a alternativa que realiza a junção gramaticalmente correta com o pronome <b>which</b>:",
+        correctKey: "C",
+        options: {
+          A: "The new security protocol who prevents unauthorized access was approved by observers.",
+          B: "The new security protocol which it prevents unauthorized access was approved by observers.",
+          C: "The new security protocol which prevents unauthorized access to the voting system was approved by international observers.",
+          D: "The new security protocol where prevents unauthorized access to the system was approved.",
+          E: "The new security protocol whose prevents unauthorized access to the voting system was approved."
+        },
+        justification: "Resposta correta: C. O pronome 'which' substitui o elemento inanimado/conceito ('The new security protocol'). O item B é incorreto por repetir o pronome de sujeito 'it'."
+      },
+      {
+        id: 8,
+        topic: "Non-Defining Relative Clauses - Nível Avançado",
+        pinnedText: null,
+        statement: "Considere as informações sobre o tribunal eleitoral:\n\n1. <i>The Superior Electoral Court is located in Brasília.</i>\n2. <i>It manages all national voting logistics and candidate registrations.</i>\n\nAssinale a alternativa que combina as orações construindo uma <b>Non-Defining Relative Clause</b> com impecável precisão gramatical:",
+        correctKey: "E",
+        options: {
+          A: "The Superior Electoral Court, that manages all national voting logistics, is located in Brasília.",
+          B: "The Superior Electoral Court, who manages all national voting logistics, is located in Brasília.",
+          C: "The Superior Electoral Court, which it manages all national voting logistics, is located in Brasília.",
+          D: "The Superior Electoral Court which manages all national voting logistics is located in Brasília.",
+          E: "The Superior Electoral Court, which manages all national voting logistics and candidate registrations, is located in Brasília."
+        },
+        justification: "Resposta correta: E. Sendo uma oração explicativa (Non-Defining), exige o pronome 'which' antecedido e sucedido por vírgulas. A opção A erra ao empregar 'that' entre vírgulas; a B usa 'who'; a C utiliza o pleonasmo 'which it'; a D omitiu as vírgulas obrigatórias."
+      },
+      {
+        id: 9,
+        topic: "Non-Defining Relative Clauses - Nível Avançado",
+        pinnedText: null,
+        statement: "Considere as orações sobre o juiz eleitoral:\n\n1. <i>Judge Carlos Mendes delivered a speech on democratic transparency.</i>\n2. <i>He supervised the regional vote counting process in São Paulo.</i>\n\nAssinale a ÚNICA opção que reúne as frases em uma <b>Non-Defining Relative Clause</b> perfeita:",
+        correctKey: "B",
+        options: {
+          A: "Judge Carlos Mendes, that supervised the regional vote counting process in São Paulo, delivered a speech on democratic transparency.",
+          B: "Judge Carlos Mendes, who supervised the regional vote counting process in São Paulo, delivered a speech on democratic transparency.",
+          C: "Judge Carlos Mendes, who he supervised the regional vote counting process, delivered a speech on democratic transparency.",
+          D: "Judge Carlos Mendes who supervised the regional vote counting process in São Paulo delivered a speech on democratic transparency.",
+          E: "Judge Carlos Mendes, which supervised the regional vote counting process in São Paulo, delivered a speech on democratic transparency."
+        },
+        justification: "Resposta correta: B. O pronome 'who' é exigido para a pessoa ('Judge Carlos Mendes') dentro de vírgulas. A opção A usou 'that' entre vírgulas; a C manteve o pronome redundante 'he'; a D omitiu as vírgulas e a E usou 'which' para uma pessoa."
+      },
+      {
+        id: 10,
+        topic: "Non-Defining Relative Clauses - Nível Avançado",
+        pinnedText: null,
+        statement: "Examine os enunciados abaixo:\n\n1. <i>The biometric scanner was introduced to verify voter identity.</i>\n2. <i>It reduced personation fraud to almost zero percent in urban districts.</i>\n\nAssinale a opção que realiza a união oracional formal mediante <b>Non-Defining Relative Clause</b> de acordo com as normas cultas:",
+        correctKey: "D",
+        options: {
+          A: "The biometric scanner, that reduced personation fraud to almost zero percent, was introduced to verify voter identity.",
+          B: "The biometric scanner, who reduced personation fraud to almost zero percent, was introduced to verify voter identity.",
+          C: "The biometric scanner, which it reduced personation fraud to almost zero percent, was introduced to verify voter identity.",
+          D: "The biometric scanner, which reduced personation fraud to almost zero percent in urban districts, was introduced to verify voter identity.",
+          E: "The biometric scanner which reduced personation fraud to almost zero percent in urban districts was introduced to verify voter identity."
+        },
+        justification: "Resposta correta: D. Estrutura correta de Non-Defining Clause para objeto/tecnologia ('The biometric scanner') com 'which' devidamente isolado entre vírgulas."
+      }
+    ];
+
+    // ESTADO DA APLICAÇÃO E EMBARALHAMENTO DO GABARITO (Fisher-Yates)
+    let processedQuestions = [];
+    let userAnswers = {};
+    let checkedQuestions = {};
+    let currentQuestionIndex = 0;
+
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function initQuizData() {
+      processedQuestions = rawQuestions.map((q) => {
+        const originalKeys = ['A', 'B', 'C', 'D', 'E'];
+        const optionsList = originalKeys.map(key => ({
+          originalKey: key,
+          text: q.options[key]
+        }));
+
+        // Embaralhamento das opções
+        const shuffledOptions = shuffleArray(optionsList);
+
+        const newLetterLabels = ['A', 'B', 'C', 'D', 'E'];
+        let mappedCorrectLetter = '';
+
+        const finalOptions = shuffledOptions.map((opt, index) => {
+          const currentLabel = newLetterLabels[index];
+          if (opt.originalKey === q.correctKey) {
+            mappedCorrectLetter = currentLabel;
+          }
+          return {
+            label: currentLabel,
+            text: opt.text,
+            originalKey: opt.originalKey
+          };
+        });
+
+        return {
+          ...q,
+          displayOptions: finalOptions,
+          correctDisplayLetter: mappedCorrectLetter
+        };
+      });
+    }
+
+    function buildNavGrid() {
+      const navGrid = document.getElementById('nav-grid');
+      navGrid.innerHTML = '';
+      for (let i = 0; i < processedQuestions.length; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'nav-btn';
+        btn.id = `nav-btn-${i}`;
+        btn.innerText = i + 1;
+        btn.onclick = () => jumpToQuestion(i);
+        navGrid.appendChild(btn);
+      }
+      updateNavStatus();
+    }
+
+    function updateNavStatus() {
+      for (let i = 0; i < processedQuestions.length; i++) {
+        const btn = document.getElementById(`nav-btn-${i}`);
+        if (!btn) continue;
+        btn.classList.remove('active', 'correct', 'incorrect');
+
+        if (i === currentQuestionIndex) {
+          btn.classList.add('active');
+        }
+
+        if (checkedQuestions[i]) {
+          const isCorrect = userAnswers[i] === processedQuestions[i].correctDisplayLetter;
+          if (isCorrect) {
+            btn.classList.add('correct');
+          } else {
+            btn.classList.add('incorrect');
+          }
+        }
+      }
+    }
+
+    function renderQuestion(index) {
+      const q = processedQuestions[index];
+
+      document.getElementById('question-title').innerText = `Questão ${index + 1} de 10`;
+
+      // Pinned Text Box para Q1 e Q2
+      const pinnedBox = document.getElementById('pinned-text-box');
+      const pinnedContent = document.getElementById('pinned-text-content');
+      if (q.pinnedText) {
+        pinnedContent.innerText = q.pinnedText;
+        pinnedBox.style.display = 'block';
+      } else {
+        pinnedBox.style.display = 'none';
+      }
+
+      document.getElementById('statement-text').innerHTML = q.statement.replace(/\n/g, '<br>');
+
+      const optionsContainer = document.getElementById('options-list');
+      optionsContainer.innerHTML = '';
+
+      const isChecked = checkedQuestions[index];
+
+      q.displayOptions.forEach((opt) => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'option-item';
+
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = `option-${index}`;
+        radio.value = opt.label;
+        radio.id = `opt-${opt.label}`;
+        radio.disabled = !!isChecked;
+
+        if (userAnswers[index] === opt.label) {
+          radio.checked = true;
+          itemDiv.classList.add('selected');
+        }
+
+        if (isChecked) {
+          if (opt.label === q.correctDisplayLetter) {
+            itemDiv.classList.add('correct-bg');
+          } else if (userAnswers[index] === opt.label) {
+            itemDiv.classList.add('incorrect-bg');
+          }
+        } else {
+          itemDiv.onclick = () => selectOption(index, opt.label);
+        }
+
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'option-text';
+        labelSpan.innerHTML = `<strong>${opt.label})</strong> ${opt.text}`;
+
+        itemDiv.appendChild(radio);
+        itemDiv.appendChild(labelSpan);
+        optionsContainer.appendChild(itemDiv);
+      });
+
+      const feedbackBox = document.getElementById('feedback-box');
+      const feedbackText = document.getElementById('feedback-text');
+      if (isChecked) {
+        let textJust = q.justification;
+        textJust = textJust.replace(/Resposta correta: [A-E]\./, `Resposta correta: ${q.correctDisplayLetter}.`);
+        feedbackText.innerText = textJust;
+        feedbackBox.classList.add('show');
+      } else {
+        feedbackBox.classList.remove('show');
+      }
+
+      const btnCheck = document.getElementById('btn-check');
+      btnCheck.disabled = !userAnswers[index] || isChecked;
+
+      const btnNext = document.getElementById('btn-next');
+      if (index === processedQuestions.length - 1) {
+        btnNext.innerText = 'Finish';
+        btnNext.classList.add('btn-finish');
+      } else {
+        btnNext.innerText = 'Next';
+        btnNext.classList.remove('btn-finish');
+      }
+
+      const btnPrev = document.getElementById('btn-prev');
+      btnPrev.disabled = index === 0;
+
+      updateNavStatus();
+    }
+
+    function selectOption(qIndex, label) {
+      if (checkedQuestions[qIndex]) return;
+      userAnswers[qIndex] = label;
+
+      const items = document.querySelectorAll('.option-item');
+      items.forEach(item => item.classList.remove('selected'));
+
+      const radio = document.getElementById(`opt-${label}`);
+      if (radio) {
+        radio.checked = true;
+        radio.closest('.option-item').classList.add('selected');
+      }
+
+      document.getElementById('btn-check').disabled = false;
+    }
+
+    function checkAnswer() {
+      if (!userAnswers[currentQuestionIndex]) return;
+      checkedQuestions[currentQuestionIndex] = true;
+      renderQuestion(currentQuestionIndex);
+    }
+
+    function jumpToQuestion(index) {
+      currentQuestionIndex = index;
+      renderQuestion(currentQuestionIndex);
+    }
+
+    function nextQuestion() {
+      if (currentQuestionIndex < processedQuestions.length - 1) {
+        currentQuestionIndex++;
+        renderQuestion(currentQuestionIndex);
+      } else {
+        finishQuiz();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        renderQuestion(currentQuestionIndex);
+      }
+    }
+
+    function finishQuiz() {
+      let totalCorrect = 0;
+      let topicErrors = {};
+      let topicTotals = {};
+
+      processedQuestions.forEach((q, idx) => {
+        const topic = q.topic;
+        if (!topicTotals[topic]) {
+          topicTotals[topic] = 0;
+          topicErrors[topic] = 0;
+        }
+        topicTotals[topic]++;
+
+        const userAns = userAnswers[idx];
+        if (userAns === q.correctDisplayLetter) {
+          totalCorrect++;
+        } else {
+          topicErrors[topic]++;
+        }
+      });
+
+      const totalQuestions = processedQuestions.length;
+      const totalIncorrect = totalQuestions - totalCorrect;
+      
+      // Nota final valendo 10,0
+      const score = (totalCorrect * 1.0).toFixed(1);
+
+      const correctPct = Math.round((totalCorrect / totalQuestions) * 100);
+      const incorrectPct = Math.round((totalIncorrect / totalQuestions) * 100);
+
+      document.getElementById('score-display').innerText = `Sua Nota: ${score.replace('.', ',')} / 10,0`;
+      document.getElementById('stat-correct').innerText = `${totalCorrect} (${correctPct}%)`;
+      document.getElementById('stat-incorrect').innerText = `${totalIncorrect} (${incorrectPct}%)`;
+
+      const diagnosticsList = document.getElementById('diagnostics-list');
+      diagnosticsList.innerHTML = '';
+
+      let needsRevision = false;
+
+      for (const topic in topicTotals) {
+        const errors = topicErrors[topic];
+        const total = topicTotals[topic];
+        const errorPct = (errors / total) * 100;
+
+        if (errorPct > 30) {
+          needsRevision = true;
+          const li = document.createElement('li');
+          let recommendationText = "";
+
+          if (topic.includes("Compreensão")) {
+            recommendationText = "<strong>Compreensão Textual:</strong> Reforçar técnicas de leitura para interpretação de textos informativos e extração de inferências.";
+          } else if (topic.includes("Wh-Words")) {
+            recommendationText = "<strong>Perguntas com Wh-Words no Simple Past:</strong> Revisar a correspondência entre pronomes interrogativos (where, why, when) e suas respostas no passado.";
+          } else if (topic.includes("Unificação")) {
+            recommendationText = "<strong>Uso dos Pronomes Relativos (Who / Which):</strong> Praticar a unificação de frases usando <i>who</i> para pessoas e <i>which</i> para coisas e animais.";
+          } else if (topic.includes("Non-Defining")) {
+            recommendationText = "<strong>Non-Defining Relative Clauses:</strong> Estudar com atenção o uso obrigatório de vírgulas, a proibição do uso de <i>that</i> em orações explicativas e a eliminação de pronomes redundantes.";
+          } else {
+            recommendationText = `<strong>${topic}:</strong> Recomenda-se revisar este conteúdo específico (Percentual de erro: ${Math.round(errorPct)}%).`;
+          }
+
+          li.innerHTML = recommendationText;
+          diagnosticsList.appendChild(li);
+        }
+      }
+
+      if (!needsRevision) {
+        const li = document.createElement('li');
+        li.innerHTML = "<strong>Parabéns!</strong> Você demonstrou excelente domínio em todos os tópicos avaliados (taxa de erro inferior a 30%). Continue praticando!";
+        diagnosticsList.appendChild(li);
+      }
+
+      document.getElementById('modal-overlay').style.display = 'flex';
+    }
+
+    function restartQuiz() {
+      userAnswers = {};
+      checkedQuestions = {};
+      currentQuestionIndex = 0;
+      document.getElementById('modal-overlay').style.display = 'none';
+      initQuizData();
+      buildNavGrid();
+      renderQuestion(0);
+    }
+
+    window.onload = function() {
+      initQuizData();
+      buildNavGrid();
+      renderQuestion(0);
+    };
+  </script>
+</body>
+</html>
